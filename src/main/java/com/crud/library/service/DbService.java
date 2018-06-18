@@ -41,12 +41,20 @@ public class DbService {
         return copyOfTheBookRepository.save(copyOfTheBook);
     }
 
+    public List<CopyOfTheBook> findAllCopies() {
+        return copyOfTheBookRepository.findAll();
+    }
+
     public List<CopyOfTheBook> findAllCopiesByBookId(int id) {
         return copyOfTheBookRepository.findAllByBook_Id(id);
     }
 
     public Optional<CopyOfTheBook> findById(int id) {
         return copyOfTheBookRepository.findById(id);
+    }
+
+    public Optional<Book> findBookById(int id) {
+        return bookRepository.findById(id);
     }
 
     public List<Book> findBooks() {

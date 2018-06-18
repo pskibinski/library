@@ -49,8 +49,18 @@ public class LibraryController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "addCopy", consumes = APPLICATION_JSON_VALUE)
-    public void addCopy(@RequestBody CopyOfTheBookDto copyOfTheBookDto) {
-        dbService.saveCopy(copyOfTheBookMapper.mapToCopyOfTheBook(copyOfTheBookDto));
+    public void addCopy(@RequestBody CopyOfTheBookDto copyOfTheBookDto, @RequestParam int id) throws BookNotFoundException {
+        Book book = dbService.findBookById(id).orElseThrow(BookNotFoundException::new);
+        CopyOfTheBook copy = copyOfTheBookMapper.mapToCopyOfTheBook(copyOfTheBookDto);
+        book.getCopiesOfBook().add(copy);
+        copy.setBook(book);
+        dbService.saveBook(book);
+        dbService.saveCopy(copy);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "getCopies")
+    public List<CopyOfTheBookDto> getCopies() {
+        return copyOfTheBookMapper.mapToCopyOfTheBookDtoList(dbService.findAllCopies());
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "getAvailableCopies")

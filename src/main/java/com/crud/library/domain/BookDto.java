@@ -1,5 +1,6 @@
 package com.crud.library.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BookDto {
@@ -7,17 +8,30 @@ public class BookDto {
     private String author;
     private String title;
     private int year;
-    private List<CopyOfTheBook> copiesList;
+    private List<CopyOfTheBook> copiesOfBook = new ArrayList<>();
 
-    public BookDto(int id, String author, String title, int year, List<CopyOfTheBook> copiesList) {
+    public BookDto(int id, String author, String title, int year) {
         this.id = id;
         this.author = author;
         this.title = title;
         this.year = year;
-        this.copiesList = copiesList;
+    }
+
+    public BookDto(String author, String title, int year) {
+        this.author = author;
+        this.title = title;
+        this.year = year;
     }
 
     public BookDto() {
+    }
+
+    public BookDto(int id, String author, String title, int year, List<CopyOfTheBook> copiesOfBook) {
+        this.id = id;
+        this.author = author;
+        this.title = title;
+        this.year = year;
+        this.copiesOfBook = copiesOfBook;
     }
 
     public int getId() {
@@ -36,7 +50,7 @@ public class BookDto {
         return year;
     }
 
-    public List<CopyOfTheBook> getCopiesList() {
-        return copiesList;
+    public List<CopyOfTheBook> getCopiesOfBook() {
+        return copiesOfBook;
     }
 }

@@ -1,9 +1,8 @@
 package com.crud.library.book.repository;
 
-import com.crud.library.domain.Book;
-import com.crud.library.domain.Borrowed;
-import com.crud.library.domain.CopyOfTheBook;
-import com.crud.library.domain.User;
+import com.crud.library.controller.BookNotFoundException;
+import com.crud.library.domain.*;
+import com.crud.library.mapper.CopyOfTheBookMapper;
 import com.crud.library.repository.BookRepository;
 import com.crud.library.repository.BorrowedRepository;
 import com.crud.library.repository.CopyOfTheBookRepository;
@@ -41,8 +40,11 @@ public class BookSaveTestSuite {
     @Autowired
     private DbService dbService;
 
+    @Autowired
+    private CopyOfTheBookMapper copyOfTheBookMapper;
+
     @Test
-    public void testBookRepositorySave() {
+    public void testBookRepositorySave() throws BookNotFoundException {
 
         //Given
         User user1 = new User("John", "Smith");
@@ -61,14 +63,14 @@ public class BookSaveTestSuite {
         Borrowed borrowed1 = new Borrowed();
         Borrowed borrowed2 = new Borrowed();
 
-        book1.getCopysOfBook().add(copy1);
-        book1.getCopysOfBook().add(copy2);
-        book1.getCopysOfBook().add(copy3);
-        book1.getCopysOfBook().add(copy4);
-        book2.getCopysOfBook().add(copy5);
-        book2.getCopysOfBook().add(copy6);
-        book3.getCopysOfBook().add(copy7);
-        book4.getCopysOfBook().add(copy8);
+        book1.getCopiesOfBook().add(copy1);
+        book1.getCopiesOfBook().add(copy2);
+        book1.getCopiesOfBook().add(copy3);
+        book1.getCopiesOfBook().add(copy4);
+        book2.getCopiesOfBook().add(copy5);
+        book2.getCopiesOfBook().add(copy6);
+        book3.getCopiesOfBook().add(copy7);
+        book4.getCopiesOfBook().add(copy8);
 
         copy1.setBook(book1);
         copy2.setBook(book1);
@@ -104,12 +106,9 @@ public class BookSaveTestSuite {
         borrowedRepository.save(borrowed1);
         borrowedRepository.save(borrowed2);
 
-
-        boolean notAvailable = dbService.checkStatus(copy1);
-        boolean available = dbService.checkStatus(copy3);
+        Book book = dbService.findBookById(86).orElseThrow(BookNotFoundException::new);
 
         //Then
-        Assert.assertFalse(notAvailable);
-        Assert.assertTrue(available);
+        System.out.println(book.getCopiesOfBook());
     }
 }

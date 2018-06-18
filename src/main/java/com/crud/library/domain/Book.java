@@ -27,6 +27,14 @@ public class Book {
         this.year = year;
     }
 
+    public Book(int id, String author, String title, int year, List<CopyOfTheBook> copiesOfBook) {
+        this.id = id;
+        this.author = author;
+        this.title = title;
+        this.year = year;
+        this.copiesOfBook = copiesOfBook;
+    }
+
     public Book() {
     }
 
@@ -54,7 +62,7 @@ public class Book {
     }
 
     @OneToMany(targetEntity = CopyOfTheBook.class, mappedBy = "book", fetch = FetchType.LAZY)
-    public List<CopyOfTheBook> getCopysOfBook() {
+    public List<CopyOfTheBook> getCopiesOfBook() {
         return copiesOfBook;
     }
 
@@ -74,7 +82,7 @@ public class Book {
         this.year = year;
     }
 
-    public void setCopysOfBook(List<CopyOfTheBook> copysOfBook) {
-        this.copiesOfBook = copysOfBook;
+    public void setCopiesOfBook(List<CopyOfTheBook> copiesOfBook) {
+        this.copiesOfBook = copiesOfBook;
     }
 }
