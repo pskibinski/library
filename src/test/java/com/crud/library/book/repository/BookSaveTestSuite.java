@@ -8,8 +8,6 @@ import com.crud.library.repository.BorrowedRepository;
 import com.crud.library.repository.CopyOfTheBookRepository;
 import com.crud.library.repository.UserRepository;
 import com.crud.library.service.DbService;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.transaction.Transactional;
-import java.time.LocalDate;
-import java.util.List;
 
 @Transactional
 @RunWith(SpringRunner.class)
@@ -106,7 +102,7 @@ public class BookSaveTestSuite {
         borrowedRepository.save(borrowed1);
         borrowedRepository.save(borrowed2);
 
-        Book book = dbService.findBookById(86).orElseThrow(BookNotFoundException::new);
+        Book book = dbService.findBookById(book1.getId()).orElseThrow(BookNotFoundException::new);
 
         //Then
         System.out.println(book.getCopiesOfBook());

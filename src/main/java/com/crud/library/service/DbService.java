@@ -1,5 +1,6 @@
 package com.crud.library.service;
 
+import com.crud.library.controller.BookNotFoundException;
 import com.crud.library.domain.Book;
 import com.crud.library.domain.Borrowed;
 import com.crud.library.domain.CopyOfTheBook;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class DbService {
@@ -33,6 +35,10 @@ public class DbService {
         return userRepository.save(user);
     }
 
+    public List<User> findUsers() {
+        return userRepository.findAll();
+    }
+
     public Book saveBook(Book book) {
         return bookRepository.save(book);
     }
@@ -47,6 +53,16 @@ public class DbService {
 
     public List<CopyOfTheBook> findAllCopiesByBookId(int id) {
         return copyOfTheBookRepository.findAllByBook_Id(id);
+    }
+
+    public Optional<Borrowed> findBorrowById(int id) {
+        return borrowedRepository.findById(id);
+    }
+
+    public List<CopyOfTheBook> findAllAvailableCopiesByBookId(int bookId) throws BookNotFoundException {
+        return findBookById(bookId).orElseThrow(BookNotFoundException::new).getCopiesOfBook().stream()
+                .filter(c -> checkStatus(c))
+                .collect(Collectors.toList());
     }
 
     public Optional<CopyOfTheBook> findById(int id) {
@@ -67,6 +83,10 @@ public class DbService {
 
     public Borrowed saveBorrowed(Borrowed borrowed) {
         return borrowedRepository.save(borrowed);
+    }
+
+    public Optional<User> findUser(int id) {
+        return userRepository.findUserById(id);
     }
 
 }

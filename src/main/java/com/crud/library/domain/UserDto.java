@@ -1,24 +1,27 @@
 package com.crud.library.domain;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDto {
     private int id;
     private String firstName;
     private String lastName;
     private LocalDate accCreated;
+    private List<Integer> borrowId = new ArrayList<>();
 
     public UserDto(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.accCreated = LocalDate.now();
     }
 
-    public UserDto(int id, String firstName, String lastName, LocalDate accCreated) {
+    public UserDto(int id, String firstName, String lastName, LocalDate accCreated, List<Integer> borrowId) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.accCreated = accCreated;
+        this.borrowId = borrowId;
     }
 
     public UserDto() {
@@ -41,6 +44,10 @@ public class UserDto {
         return accCreated;
     }
 
+    public List<Integer> getBorrowId() {
+        return borrowId;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -55,5 +62,9 @@ public class UserDto {
 
     public void setAccCreated(LocalDate accCreated) {
         this.accCreated = accCreated;
+    }
+
+    public void setBorrowId(List<Integer> borrowId) {
+        this.borrowId = borrowId;
     }
 }

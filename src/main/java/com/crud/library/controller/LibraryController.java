@@ -9,9 +9,11 @@ import com.crud.library.service.DbService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import static java.util.Optional.ofNullable;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 @RestController
@@ -38,8 +40,14 @@ public class LibraryController {
         dbService.saveUser(userMapper.mapToUser(userDto));
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "getUsers")
+    public List<UserDto> getUsers() {
+        return userMapper.mapToUserDtoList(dbService.findUsers());
+    }
+
     @RequestMapping(method = RequestMethod.POST, value = "addBook", consumes = APPLICATION_JSON_VALUE)
     public void addBook(@RequestBody BookDto bookDto) {
+        ofNullable(bookDto.getCopyId()).orElse(new ArrayList<>());
         dbService.saveBook(bookMapper.mapToBook(bookDto));
     }
 
@@ -51,6 +59,7 @@ public class LibraryController {
     @RequestMapping(method = RequestMethod.POST, value = "addCopy", consumes = APPLICATION_JSON_VALUE)
     public void addCopy(@RequestBody CopyOfTheBookDto copyOfTheBookDto, @RequestParam int id) throws BookNotFoundException {
         Book book = dbService.findBookById(id).orElseThrow(BookNotFoundException::new);
+        copyOfTheBookDto.setBookId(id);
         CopyOfTheBook copy = copyOfTheBookMapper.mapToCopyOfTheBook(copyOfTheBookDto);
         book.getCopiesOfBook().add(copy);
         copy.setBook(book);
@@ -64,22 +73,33 @@ public class LibraryController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "getAvailableCopies")
-    public List<CopyOfTheBookDto> getCopiesOfBook(@RequestParam int id) {
-        List<CopyOfTheBook> availableCopies = dbService.findAllCopiesByBookId(id)
-                .stream()
-                .filter(copy -> dbService.checkStatus(copy))
-                .collect(Collectors.toList());
+    public List<CopyOfTheBookDto> getCopiesOfBook(@RequestParam int id) throws BookNotFoundException {
+        List<CopyOfTheBook> availableCopies = dbService.findAllAvailableCopiesByBookId(id);
         return copyOfTheBookMapper.mapToCopyOfTheBookDtoList(availableCopies);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "borrowBook", consumes = APPLICATION_JSON_VALUE)
-    public void borrowBook(@RequestBody BorrowedDto borrowedDto) {
-        dbService.saveBorrowed(borrowedMapper.mapToBorrowed(borrowedDto));
+    public void borrowBook(@RequestBody BorrowedDto borrowedDto, @RequestParam int userId, @RequestParam int copyId) throws UserNotFoundException, BookNotFoundException {
+        CopyOfTheBook copy = dbService.findById(copyId).orElseThrow(BookNotFoundException::new);
+        User user = dbService.findUser(userId).orElseThrow(UserNotFoundException::new);
+        borrowedDto.setBorrowDate(LocalDate.now());
+        borrowedDto.setUserId(userId);
+        Borrowed borrowed = borrowedMapper.mapToBorrowed(borrowedDto);
+        user.getBorrowedBooks().add(borrowed);
+        borrowed.setUser(user);
+        borrowed.setCopyOfTheBook(copy);
+        borrowedDto.setCopyId(copyId);
+        borrowedDto.setUserId(userId);
+        dbService.saveBorrowed(borrowed);
+        dbService.saveUser(user);
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "returnBook")
-    public BorrowedDto returnBook(@RequestBody BorrowedDto borrowedDto) {
-        return borrowedMapper.mapToBorrowedDto(dbService.saveBorrowed(borrowedMapper.mapToBorrowed(borrowedDto)));
+    public BorrowedDto returnBook(@RequestParam int borrowId) throws BookNotFoundException {
+        Borrowed borrowed = dbService.findBorrowById(borrowId).orElseThrow(BookNotFoundException::new);
+        borrowed.setReturnDate(LocalDate.now());
+        dbService.saveBorrowed(borrowed);
+        return borrowedMapper.mapToBorrowedDto(borrowed);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "checkStatus")

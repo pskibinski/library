@@ -2,38 +2,33 @@ package com.crud.library.domain;
 
 public class CopyOfTheBookDto {
     private int id;
-    private Book book;
+    private int bookId;
 
     public CopyOfTheBookDto() {
     }
 
-    public CopyOfTheBookDto(int id) {
+    public CopyOfTheBookDto(int id, int bookId) {
         this.id = id;
+        this.bookId = bookId;
     }
 
-    public CopyOfTheBookDto(int id, Book book) {
-        this.id = id;
-        this.book = book;
-    }
-
-    public CopyOfTheBookDto(Book book) {
-        this.book = book;
+    public CopyOfTheBookDto(int bookId) {
+        this.bookId = bookId;
     }
 
     public int getId() {
         return id;
     }
 
-    public Book getBook() {
-        return book;
+    public int getBookId() {
+        return bookId;
     }
-
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public void setBook(Book book) {
-        this.book = book;
+    public void setBookId(int bookId) {
+        this.bookId = bookId;
     }
 }

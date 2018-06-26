@@ -8,7 +8,7 @@ public class BookDto {
     private String author;
     private String title;
     private int year;
-    private List<CopyOfTheBook> copiesOfBook = new ArrayList<>();
+    private List<Integer> copyId = new ArrayList<>();
 
     public BookDto(int id, String author, String title, int year) {
         this.id = id;
@@ -26,12 +26,12 @@ public class BookDto {
     public BookDto() {
     }
 
-    public BookDto(int id, String author, String title, int year, List<CopyOfTheBook> copiesOfBook) {
+    public BookDto(int id, String author, String title, int year, List<Integer> copyId) {
         this.id = id;
         this.author = author;
         this.title = title;
         this.year = year;
-        this.copiesOfBook = copiesOfBook;
+        this.copyId = copyId;
     }
 
     public int getId() {
@@ -50,7 +50,7 @@ public class BookDto {
         return year;
     }
 
-    public List<CopyOfTheBook> getCopiesOfBook() {
-        return copiesOfBook;
+    public List<Integer> getCopyId() {
+        return copyId;
     }
 }

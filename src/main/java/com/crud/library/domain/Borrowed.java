@@ -20,6 +20,14 @@ public class Borrowed {
         this.returnDate = returnDate;
     }
 
+    public Borrowed(int id, LocalDate borrowDate, LocalDate returnDate, User user, CopyOfTheBook copyOfTheBook) {
+        this.id = id;
+        this.borrowDate = borrowDate;
+        this.returnDate = returnDate;
+        this.user = user;
+        this.copyOfTheBook = copyOfTheBook;
+    }
+
     public Borrowed() {
         this.borrowDate = LocalDate.now();
         this.returnDate = null;
@@ -59,11 +67,11 @@ public class Borrowed {
         this.id = id;
     }
 
-    private void setBorrowDate(LocalDate borrowDate) {
+    public void setBorrowDate(LocalDate borrowDate) {
         this.borrowDate = borrowDate;
     }
 
-    private void setReturnDate(LocalDate returnDate) {
+    public void setReturnDate(LocalDate returnDate) {
         this.returnDate = returnDate;
     }
 
