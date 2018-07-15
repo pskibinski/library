@@ -1,19 +1,11 @@
 package com.crud.library.controller;
 
 import com.crud.library.domain.*;
-import com.crud.library.mapper.BookMapper;
-import com.crud.library.mapper.BorrowedMapper;
-import com.crud.library.mapper.CopyOfTheBookMapper;
-import com.crud.library.mapper.UserMapper;
-import com.crud.library.service.DbService;
+import com.crud.library.facade.LibraryFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Optional.ofNullable;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 @RestController
@@ -21,89 +13,67 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 public class LibraryController {
 
     @Autowired
-    private BookMapper bookMapper;
+    private LibraryFacade libraryFacade;
 
-    @Autowired
-    private BorrowedMapper borrowedMapper;
-
-    @Autowired
-    private CopyOfTheBookMapper copyOfTheBookMapper;
-
-    @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
-    private DbService dbService;
-
-    @RequestMapping(method = RequestMethod.POST, value = "createUser", consumes = APPLICATION_JSON_VALUE)
-    public void createUser(@RequestBody UserDto userDto) {
-        dbService.saveUser(userMapper.mapToUser(userDto));
+    @RequestMapping(method = RequestMethod.POST, value = "addUser", consumes = APPLICATION_JSON_VALUE)
+    public void addUser(@RequestBody UserDto userDto) {
+        libraryFacade.addUser(userDto);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "getUsers")
     public List<UserDto> getUsers() {
-        return userMapper.mapToUserDtoList(dbService.findUsers());
+        return libraryFacade.findAllUsers();
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE, value = "deleteUser")
+    public void deleteUser(@RequestParam int userId) throws UserNotFoundException {
+        libraryFacade.deleteUser(userId);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "addBook", consumes = APPLICATION_JSON_VALUE)
     public void addBook(@RequestBody BookDto bookDto) {
-        ofNullable(bookDto.getCopyId()).orElse(new ArrayList<>());
-        dbService.saveBook(bookMapper.mapToBook(bookDto));
+        libraryFacade.addBook(bookDto);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "getBooks")
     public List<BookDto> getBooks() {
-        return bookMapper.mapToBookDtoList(dbService.findBooks());
+        return libraryFacade.findAllBooks();
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "addCopy", consumes = APPLICATION_JSON_VALUE)
-    public void addCopy(@RequestBody CopyOfTheBookDto copyOfTheBookDto, @RequestParam int id) throws BookNotFoundException {
-        Book book = dbService.findBookById(id).orElseThrow(BookNotFoundException::new);
-        copyOfTheBookDto.setBookId(id);
-        CopyOfTheBook copy = copyOfTheBookMapper.mapToCopyOfTheBook(copyOfTheBookDto);
-        book.getCopiesOfBook().add(copy);
-        copy.setBook(book);
-        dbService.saveBook(book);
-        dbService.saveCopy(copy);
+    public void addCopy(@RequestBody CopyOfTheBookDto copyOfTheBookDto, @RequestParam int bookId) throws BookNotFoundException {
+        libraryFacade.addCopy(copyOfTheBookDto, bookId);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "getCopies")
     public List<CopyOfTheBookDto> getCopies() {
-        return copyOfTheBookMapper.mapToCopyOfTheBookDtoList(dbService.findAllCopies());
+        return libraryFacade.findAllCopies();
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "getAvailableCopies")
-    public List<CopyOfTheBookDto> getCopiesOfBook(@RequestParam int id) throws BookNotFoundException {
-        List<CopyOfTheBook> availableCopies = dbService.findAllAvailableCopiesByBookId(id);
-        return copyOfTheBookMapper.mapToCopyOfTheBookDtoList(availableCopies);
+    public List<CopyOfTheBookDto> getCopiesOfBook(@RequestParam int bookId) throws BookNotFoundException {
+        return libraryFacade.findAllAvailableCopies(bookId);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "checkStatus")
+    public boolean checkStatus(@RequestParam int copyId) throws CopyNotFoundException {
+        return libraryFacade.checkCopyStatus(copyId);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "borrowBook", consumes = APPLICATION_JSON_VALUE)
     public void borrowBook(@RequestBody BorrowedDto borrowedDto, @RequestParam int userId, @RequestParam int copyId) throws UserNotFoundException, BookNotFoundException {
-        CopyOfTheBook copy = dbService.findById(copyId).orElseThrow(BookNotFoundException::new);
-        User user = dbService.findUser(userId).orElseThrow(UserNotFoundException::new);
-        borrowedDto.setBorrowDate(LocalDate.now());
-        borrowedDto.setUserId(userId);
-        Borrowed borrowed = borrowedMapper.mapToBorrowed(borrowedDto);
-        user.getBorrowedBooks().add(borrowed);
-        borrowed.setUser(user);
-        borrowed.setCopyOfTheBook(copy);
-        borrowedDto.setCopyId(copyId);
-        borrowedDto.setUserId(userId);
-        dbService.saveBorrowed(borrowed);
-        dbService.saveUser(user);
+        libraryFacade.borrowBook(borrowedDto, userId, copyId);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "getBorrows")
+    public List<BorrowedDto> getBorrows() {
+        return libraryFacade.findAllBorrows();
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "returnBook")
-    public BorrowedDto returnBook(@RequestParam int borrowId) throws BookNotFoundException {
-        Borrowed borrowed = dbService.findBorrowById(borrowId).orElseThrow(BookNotFoundException::new);
-        borrowed.setReturnDate(LocalDate.now());
-        dbService.saveBorrowed(borrowed);
-        return borrowedMapper.mapToBorrowedDto(borrowed);
+    public BorrowedDto returnBook(@RequestParam int borrowId) throws BorrowNotFoundException {
+        return libraryFacade.returnBook(borrowId);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "checkStatus")
-    public boolean checkStatus(@RequestParam int id) throws BookNotFoundException {
-        return dbService.checkStatus(dbService.findById(id).orElseThrow(BookNotFoundException::new));
-    }
+
 }

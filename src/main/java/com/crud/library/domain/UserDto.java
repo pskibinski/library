@@ -11,6 +11,13 @@ public class UserDto {
     private LocalDate accCreated;
     private List<Integer> borrowId = new ArrayList<>();
 
+    public UserDto(int id, String firstName, String lastName, LocalDate accCreated) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.accCreated = accCreated;
+    }
+
     public UserDto(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;

@@ -16,8 +16,6 @@ import static java.util.Optional.ofNullable;
 @Component
 public class BookMapper {
 
-    private DbService dbService;
-
     public Book mapToBook(BookDto bookDto) {
         return new Book(bookDto.getAuthor(), bookDto.getTitle(), bookDto.getYear());
     }

@@ -16,6 +16,12 @@ public class BorrowedDto {
         this.userId = userId;
     }
 
+    public BorrowedDto(int id, LocalDate borrowDate, LocalDate returnDate) {
+        this.id = id;
+        this.borrowDate = borrowDate;
+        this.returnDate = returnDate;
+    }
+
     public BorrowedDto() {
     }
 

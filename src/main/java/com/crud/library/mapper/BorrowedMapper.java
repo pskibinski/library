@@ -22,7 +22,7 @@ public class BorrowedMapper {
 
     public List<BorrowedDto> mapToBorrowedDtoList(List<Borrowed> borrowedList) {
         return borrowedList.stream().
-                map(b -> new BorrowedDto(b.getId(), b.getCopyOfTheBook().getId(), b.getUser().getId())).
+                map(b -> new BorrowedDto(b.getId(), b.getBorrowDate(), b.getReturnDate())).
                 collect(Collectors.toList());
     }
 }

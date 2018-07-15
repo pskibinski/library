@@ -1,6 +1,7 @@
 package com.crud.library.service;
 
 import com.crud.library.controller.BookNotFoundException;
+import com.crud.library.controller.UserNotFoundException;
 import com.crud.library.domain.Book;
 import com.crud.library.domain.Borrowed;
 import com.crud.library.domain.CopyOfTheBook;
@@ -37,6 +38,10 @@ public class DbService {
 
     public List<User> findUsers() {
         return userRepository.findAll();
+    }
+
+    public void deleteUser(int userId) throws UserNotFoundException {
+        userRepository.delete(userRepository.findUserById(userId).orElseThrow(UserNotFoundException::new));
     }
 
     public Book saveBook(Book book) {
@@ -83,6 +88,10 @@ public class DbService {
 
     public Borrowed saveBorrowed(Borrowed borrowed) {
         return borrowedRepository.save(borrowed);
+    }
+
+    public List<Borrowed> findBorrowed() {
+        return borrowedRepository.findAll();
     }
 
     public Optional<User> findUser(int id) {

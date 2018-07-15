@@ -32,4 +32,5 @@ dependencies {
     compile('org.hibernate:hibernate-java8:5.1.0.Final')
     compile('com.fasterxml.jackson.datatype:jackson-datatype-jsr310')
     testCompile('org.springframework.boot:spring-boot-starter-test')
+    compile('com.google.code.gson:gson:2.8.2')
 }
